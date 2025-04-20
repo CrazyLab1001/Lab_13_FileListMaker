@@ -1,6 +1,8 @@
+import javax.swing.*;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
         boolean done = false;
@@ -10,10 +12,17 @@ public class Main {
         int spotOnList = 0;
         ArrayList<String> userList = new ArrayList<>();
         Scanner in = new Scanner(System.in);
-        System.out.println("Make a list!");
+        JFileChooser chooser = new JFileChooser();
+        Scanner inFile;
+        File selectedFile;
+        String line;
+        String fileName;
+        Path target = new File(System.getProperty("user.dir")).toPath();
+        target = target.resolve("src"); // opens in project src folder
+        chooser.setCurrentDirectory(target.toFile());
         do {
             display(userList);
-            userChoice = SafeInput.getRegEXString(in, "Pick an option: Add, Delete, Insert, Print, or Quit. [A/D/I/P/Q]", "[ADIPQ]");
+            userChoice = SafeInput.getRegEXString(in, "Pick an option: Add, Delete, Insert, View, Move, Open, Copy, Save, or Quit. [A/D/I/V/M/O/C/S/Q]", "[ADIVQ]");
             // regex choices are only in caps since the SafeInput converts them to uppercase (for simplicity)
             switch (userChoice) {
               case "A":
@@ -40,10 +49,17 @@ public class Main {
                     userList.add(spotOnList,addToList);
                     System.out.println("Inserted!");
                     break;
-                case "P":
+                case "V":
                     display(userList);
                     System.out.println("");
                     break;
+                case "M":
+                    break;
+                case "O":
+                    break;
+                case "C"
+                    break;
+                case: "S":
                 default:
                     confirmChoice = SafeInput.getYNConfirm(in, "Are you sure you want to quit?");
                     if (confirmChoice == true) {
@@ -59,6 +75,10 @@ public class Main {
         for (int cnt = 0; cnt < list.size(); cnt++) {
             System.out.println((cnt + 1) + ". " + list.get(cnt));
         }
+
+    }
+
+    private static void saveFile() {
 
     }
 }
