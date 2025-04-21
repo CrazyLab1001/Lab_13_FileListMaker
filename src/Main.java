@@ -19,8 +19,8 @@ public class Main {
         ArrayList<String> userList = new ArrayList<>();
         Scanner in = new Scanner(System.in);
         boolean needsToBeSaved = false;
-        System.out.println("Please select a .txt file!");
-        userList = openFile(userList);
+        // System.out.println("Please select a .txt file!");
+        // userList = openFile(userList);
         do {
             display(userList);
             userChoice = SafeInput.getRegEXString(in, "Pick an option: Add, Delete, Insert, View, Move, Open, Copy, Save, or Quit. [A/D/I/V/M/O/C/S/Q]", "[ADIVMOCSQ]");
@@ -72,8 +72,10 @@ public class Main {
                     {
                         confirmChoice = SafeInput.getYNConfirm(in,"Wait! Do you want to save this file first?");
                         if (confirmChoice == true) {
-                        saveFile(userList,fileName); }
+                        saveFile(userList,fileName);
+                        }
                     }
+                    userList.clear();
                     openFile(userList);
                     break;
                 case "C": // Clear file
@@ -81,6 +83,7 @@ public class Main {
                     if (confirmChoice == true)
                     {
                         userList.clear();
+                        needsToBeSaved = true;
                     }
                     else {
                         System.out.println("This is why I ask!");
@@ -89,6 +92,7 @@ public class Main {
                 case "S": // Save
                 {
                     saveFile(userList,fileName);
+                    needsToBeSaved = false;
                 }
                 default:
                     confirmChoice = SafeInput.getYNConfirm(in, "Are you sure you want to quit?");
@@ -96,8 +100,12 @@ public class Main {
                         if (needsToBeSaved == true) {
                             confirmChoice = SafeInput.getYNConfirm(in,"Wait! Do you want to save this file first?");
                             if (confirmChoice == true) {
-                                saveFile(userList,fileName); }
+                                saveFile(userList,fileName);
+                            System.out.println("File saved! Closing program."); }
+                            System.exit(0);
                         }
+                        System.out.println("Closing program!");
+                        System.exit(0);
                     } else {
                         System.out.println("Nevermind then! :)");
                     }
@@ -114,7 +122,11 @@ public class Main {
     }
 
     private static void saveFile(ArrayList<String> list, String fileName) {
+        Scanner scanner = new Scanner(System.in);
         File workingDirectory = new File(System.getProperty("user.dir"));
+        if (fileName.isEmpty()){
+            fileName = SafeInput.getNonZeroLenString(scanner,"Enter the filename (without .txt extension, I'll add that for you!)");
+        }
         Path file = Paths.get(workingDirectory.getPath() + "\\src\\" + fileName + ".txt"); // creates/overrides data.txt in
         try{
             OutputStream out = new BufferedOutputStream(Files.newOutputStream(file, CREATE));
@@ -125,7 +137,7 @@ public class Main {
             } // writes line by line
             writer.close();
 
-            System.out.println("File written! Closing program. :)");
+            System.out.println("File saved!");
         } catch (IOException e) {
             e.printStackTrace();
         }
