@@ -1,10 +1,13 @@
 import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 public class Main {
     public static void main(String[] args) {
         boolean done = false;
@@ -12,6 +15,7 @@ public class Main {
         boolean confirmChoice;
         String addToList = "";
         int spotOnList = 0;
+        String fileName = "";
         ArrayList<String> userList = new ArrayList<>();
         Scanner in = new Scanner(System.in);
         boolean needsToBeSaved = false;
@@ -19,7 +23,7 @@ public class Main {
         userList = openFile(userList);
         do {
             display(userList);
-            userChoice = SafeInput.getRegEXString(in, "Pick an option: Add, Delete, Insert, View, Move, Open, Copy, Save, or Quit. [A/D/I/V/M/O/C/S/Q]", "[ADIVQ]");
+            userChoice = SafeInput.getRegEXString(in, "Pick an option: Add, Delete, Insert, View, Move, Open, Copy, Save, or Quit. [A/D/I/V/M/O/C/S/Q]", "[ADIVMOCSQ]");
             // regex choices are only in caps since the SafeInput converts them to uppercase (for simplicity)
             switch (userChoice) {
                 case "A": // Add
@@ -56,22 +60,41 @@ public class Main {
                 case "M": // Move
                     spotOnList = SafeInput.getRangedInt(in, "Which line would you like to move?", 1, (userList.size() + 1));
                     spotOnList--;
+                    addToList = userList.get(spotOnList);
+                    spotOnList = SafeInput.getRangedInt(in, "Which line would you like to move ''" + addToList + "'' to?", 1, (userList.size() + 1));
+                    userList.add(spotOnList,addToList);
                     needsToBeSaved = true;
                     break;
                 case "O": // Open file
+                    if (needsToBeSaved == true)
+                    {
+                        confirmChoice = SafeInput.getYNConfirm(in,"Wait! Do you want to save this file first?");
+                        if (confirmChoice == true) {
+                        saveFile(userList,fileName); }
+                    }
+                    openFile(userList);
                     break;
                 case "C": // Clear file
-                    confirmChoice = SafeInput.getYNConfirm(in, "Wait! Are you sure you want to clear the list? You'll erase it all with no ")
+                    confirmChoice = SafeInput.getYNConfirm(in, "Wait! Are you sure you want to clear the list? You'll erase it all with no chance to get it back!");
+                    if (confirmChoice == true)
+                    {
+                        userList.clear();
+                    }
+                    else {
+                        System.out.println("This is why I ask!");
+                    }
                     break;
                 case "S": // Save
                 {
-                    // code writer here
+                    saveFile(userList,fileName);
                 }
                 default:
                     confirmChoice = SafeInput.getYNConfirm(in, "Are you sure you want to quit?");
                     if (confirmChoice == true) {
                         if (needsToBeSaved == true) {
-                            System.out.println("Wait! Would you like to save first?");
+                            confirmChoice = SafeInput.getYNConfirm(in,"Wait! Do you want to save this file first?");
+                            if (confirmChoice == true) {
+                                saveFile(userList,fileName); }
                         }
                     } else {
                         System.out.println("Nevermind then! :)");
@@ -88,8 +111,22 @@ public class Main {
 
     }
 
-    private static void saveFile() {
-        System.out.println("Wait! Do you want to save this file first?");
+    private static void saveFile(ArrayList<String> list, String fileName) {
+        File workingDirectory = new File(System.getProperty("user.dir"));
+        Path file = Paths.get(workingDirectory.getPath() + "\\src\\" + fileName + ".txt"); // creates/overrides data.txt in
+        try{
+            OutputStream out = new BufferedOutputStream(Files.newOutputStream(file, CREATE));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+            for (String rec : list) {
+                writer.write(rec,0, rec.length());
+                writer.newLine();
+            } // writes line by line
+            writer.close();
+
+            System.out.println("File written! Closing program. :)");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
