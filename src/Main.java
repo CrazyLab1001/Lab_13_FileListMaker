@@ -61,7 +61,9 @@ public class Main {
                     spotOnList = SafeInput.getRangedInt(in, "Which line would you like to move?", 1, (userList.size() + 1));
                     spotOnList--;
                     addToList = userList.get(spotOnList);
+                    userList.remove(spotOnList);
                     spotOnList = SafeInput.getRangedInt(in, "Which line would you like to move ''" + addToList + "'' to?", 1, (userList.size() + 1));
+                    spotOnList--;
                     userList.add(spotOnList,addToList);
                     needsToBeSaved = true;
                     break;
