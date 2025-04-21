@@ -93,6 +93,7 @@ public class Main {
                 {
                     saveFile(userList,fileName);
                     needsToBeSaved = false;
+                    break;
                 }
                 default:
                     confirmChoice = SafeInput.getYNConfirm(in, "Are you sure you want to quit?");
@@ -101,7 +102,7 @@ public class Main {
                             confirmChoice = SafeInput.getYNConfirm(in,"Wait! Do you want to save this file first?");
                             if (confirmChoice == true) {
                                 saveFile(userList,fileName);
-                            System.out.println("File saved! Closing program."); }
+                            System.out.println("Done. Closing program."); }
                             System.exit(0);
                         }
                         System.out.println("Closing program!");
